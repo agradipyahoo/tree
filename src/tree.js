@@ -8,26 +8,6 @@ const {SelectableList, SelectableItem, InlinePopupGroup} = CommonComponent;
 const {InlinePopup, InlineButton, InlineBody} = InlinePopupGroup;
 
 
-
-// each drop down item will have childern// how that can be achieved, based on
-/*
- Each TreeItem will have follow state.
- 1. Expand
- 2. Collapse
- ----//----
- Properties.
- 1. has children
- 2. dont have children ..Collapse
- 2. Expand will call for getChildrenList ->will return promise.
- 3. partial selection-done
- 4. select all children if parent selected - done.
- 4. Preload tree state - pending.
- 5. Search annd select.
- 6. scroll to a particular node on tree selection
- 7. automatically build subtree if parent got selected.
-  */
-
-
 /*
 *@description: React View for Expland and collapse
 */
@@ -299,8 +279,6 @@ export default class Tree extends Component {
     render(){
         const items = this.state.items;
         let {ListItem: ListItem = TreeItem,
-            localeStrings: localeStrings = {},
-            noDataMessage: noDataMessage = '',
             showSearch: showSearch = false} = this.props;
         let listClassName = this.multiSelect ? 'multi-select-list' : 'single-select-list';
         const configs = {
@@ -316,4 +294,13 @@ export default class Tree extends Component {
             </div>;
     }
 
+}
+
+Tree.propTypes = {
+    items:PropTypes.array.isRequired,
+    ListItem:PropTypes.object,
+    showsearch:PropTypes.bool,
+    multiSelect:PropTypes.bool,
+    selectTreeItems:PropTypes.array,
+    selectionManager: PropTypes.object
 }
