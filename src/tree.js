@@ -12,17 +12,17 @@ const {InlinePopup, InlineButton, InlineBody} = InlinePopupGroup;
 // each drop down item will have childern// how that can be achieved, based on
 /*
  Each TreeItem will have follow state.
- 1.Expand
- 2.Collapse
+ 1. Expand
+ 2. Collapse
  ----//----
  Properties.
- 1.has children
- 2.dont have children ..Collapse
+ 1. has children
+ 2. dont have children ..Collapse
  2. Expand will call for getChildrenList ->will return promise.
  3. partial selection-done
- 4.select all children if parent selected-done.
- 4. Preload tree state.
- 5.Search annd select.
+ 4. select all children if parent selected - done.
+ 4. Preload tree state - pending.
+ 5. Search annd select.
  6. scroll to a particular node on tree selection
  7. automatically build subtree if parent got selected.
   */
@@ -88,7 +88,11 @@ export class TreeItem extends SelectableItem {
         }
 
     }
-
+    componentDidMount() {
+        let {itemData, selectionManager} = this.props;       
+        this.getParentId() && selectionManager.trigger('partialSelected',this.getParentId());
+    }
+    
     getAllChildren(itemData){
         return itemData.children;
     }
@@ -223,7 +227,7 @@ export class SubtreeComponent extends Component{
         }
         else{
             if(this.props.hasChild){
-                var childList = this.props.getChildrenList(); //getChildrenList -->it is deffered,
+                let childList = this.props.getChildrenList(); //getChildrenList -->it is deffered,
                 childList.then((data)=> {
                     this.setState({expand:true,children:data});
                 });
@@ -269,6 +273,12 @@ export default class Tree extends Component {
         super(props);
         let {items: items = [],multiSelect: multiSelect = false,
             selectionManager:selectionManager = new Selection({multiSelect:multiSelect})} = props;
+        
+        let selectTreeItems = props.selectTreeItems;
+        selectTreeItems.forEach(function(v){
+            selectionManager.select(v);
+        });
+        
 
         selectionManager.on('change', function (selected, prevSelected) {
             console.log(selected);
