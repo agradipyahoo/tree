@@ -11,9 +11,12 @@ Basic useful feature list:
  * TODO:Selecting particular item into tree and scroll into the item
  * TODO:Unit test cases.
 
+ # setup
+
+ `npm install react-tree-components`
 
  ```javascript
-    import Tree from "tree";
+    import Tree from "react-tree-components";
     import React, {PropTypes, Component} from "react";
     import ReactDOM from 'react-dom';
     let app = document.getElementById('app');

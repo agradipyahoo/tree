@@ -1,5 +1,5 @@
 {
-    "name": "tree",
+    "name": "react-tree-components",
     "version": "1.0.0",
     "description": "React Tree components",
     "main": "lib/index.js",
