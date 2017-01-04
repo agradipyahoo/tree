@@ -53,7 +53,7 @@ export class TreeSelectableList extends SelectableList{
 }
 
 /*
-*@class 
+*@class
 *@extends SelectableItem
 *@description: TreeView Item
 */
@@ -69,14 +69,14 @@ export class TreeItem extends SelectableItem {
 
     }
     componentDidMount() {
-        let {itemData, selectionManager} = this.props;       
+        let {itemData, selectionManager} = this.props;
         this.getParentId() && selectionManager.trigger('partialSelected',this.getParentId());
     }
-    
+
     getAllChildren(itemData){
         return itemData.children;
     }
-    
+
     selectItem(event) {
         event.preventDefault();
         let {itemData, selectionManager} = this.props;
@@ -86,19 +86,19 @@ export class TreeItem extends SelectableItem {
                 let children = this.getAllChildren(itemData);
                 children.forEach(function(v){
                     if(selectionManager.isSelected(itemData)){
-                        selectionManager.select(v);    
+                        selectionManager.select(v);
                     }
                     else{
                         selectionManager.deselect(v);
                     }
-                    
+
                 });
             }
             this.getParentId() && selectionManager.trigger('partialSelected',this.getParentId());
         } else {
             selectionManager.select(itemData);
         }
-        
+
     }
 
     updateSelectionState() {
@@ -182,7 +182,7 @@ export class TreeItem extends SelectableItem {
 export const ClickActionItemContent = (props) => {
     return <a href="#select" onClick={props.onClick}><em className="icon"></em> {props.name}</a>
 }
-    
+
 /*
 *@class SubtreeComponent
 *@extends Component
@@ -252,13 +252,12 @@ export default class Tree extends Component {
     constructor(props){
         super(props);
         let {items: items = [],multiSelect: multiSelect = false,
-            selectionManager:selectionManager = new Selection({multiSelect:multiSelect})} = props;
+            selectionManager:selectionManager = new Selection({multiSelect:multiSelect}) ,selectTreeItems:selectTreeItems=[]} = props;
         
-        let selectTreeItems = props.selectTreeItems;
         selectTreeItems.forEach(function(v){
             selectionManager.select(v);
         });
-        
+
 
         selectionManager.on('change', function (selected, prevSelected) {
             console.log(selected);

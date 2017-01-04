@@ -1,5 +1,5 @@
 # tree
-React Multi Level Tree component 
+React Multi Level Tree component
 
 Basic useful feature list:
 
@@ -9,8 +9,9 @@ Basic useful feature list:
  * Preload Tree State
  * TODO: Search and select
  * TODO:Selecting particular item into tree and scroll into the item
- 
- 
+ * TODO:Unit test cases.
+
+
  ```javascript
     import Tree from "tree";
     import React, {PropTypes, Component} from "react";
@@ -33,7 +34,7 @@ Basic useful feature list:
                 for(let j=i;j<i+5;j++){
                     if(j%5===0){
                         let subchild =[]
-                        for(n=j;n<j+5;n++){ 
+                        for(n=j;n<j+5;n++){
                             subchild.push({id:'sc'+n,name:'carrier'+n,parentId:'c'+j})
                         }    
                         children.push({id:'c'+j,name:'city'+j,parentId:i,hasChild:true,children:subchild});
@@ -41,8 +42,8 @@ Basic useful feature list:
                     else{
                         children.push({id:'c'+j,name:'city'+j,parentId:i});
                     }
-                    
-                    
+
+
                 }
                 item = {...item,hasChild:true,children:children}
             }
@@ -58,9 +59,8 @@ Basic useful feature list:
         selectTreeItems.push({id:5,name:'state' + 5});
         selectTreeItems.push({id:'c5',name:'city' + 5});
         selectTreeItems.push({id:'sc5',name:'carrier' + 5});
-        
-    
-    ReactDOM.render(<Tree showSearch={true} selectTreeItems={selectTreeItems} items={treeList} multiSelect={true}></Tree>,app)
-    
- ```
 
+
+    ReactDOM.render(<Tree showSearch={true} selectTreeItems={selectTreeItems} items={treeList} multiSelect={true}></Tree>,app)
+
+ ```

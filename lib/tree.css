@@ -1,5 +1,92 @@
 .tree {
   background-color: #fff;
+  /*.single-select-list{
+    li{
+      .action {
+        &:before {
+          margin-right: 15px;
+          content:' ';
+        }
+      }
+
+      &.active{
+        .action{
+          &:before {
+            content : '\2713';
+            margin-right:5px;
+            font-style:normal;
+          }
+        }
+      }
+    }
+  }
+
+  .multi-select-list{
+    li{
+      &.partial{
+        .action{
+          &:before {
+            content : '\25A0';
+            margin-right:5px;
+            font-style:normal;
+          }
+        }
+      }
+
+      &.active{
+        .action{
+          &:before {
+            content : '\2611';
+            margin-right:5px;
+            font-style:normal;
+          }
+        }
+      }
+      .action {
+        &:before {
+          content: '\2610';
+          margin-right: 5px;
+          font-style: normal;
+          font-size: 18px;
+        }
+      }
+    }
+  }*/
+}
+.tree ul.item-list {
+  margin: 0;
+  padding: 0;
+}
+.tree ul.item-list li {
+  list-style: none;
+}
+.tree ul.item-list li a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tree ul.item-list .multi-select-item > a > .icon,
+.tree ul.item-list .single-select-item > a > .icon {
+  background: url("//i.l.inmobicdn.net/website/portal/kensho/0.347/css/images/SPRITE.png");
+  background-repeat: no-repeat;
+  background-position: -32px -866px;
+  width: 19px;
+  height: 19px;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+.tree ul.item-list .multi-select-item.active > a > .icon,
+.tree ul.item-list .single-select-item.active > a > .icon {
+  background-position: -10px -866px;
+}
+.tree ul.item-list .multi-select-item.partial > a > .icon,
+.tree ul.item-list .single-select-item.partial > a > .icon {
+  background-position: -54px -866px;
+}
+.tree ul.item-list .multi-select-item.disabled > a,
+.tree ul.item-list .single-select-item.disabled > a {
+  color: #ccc;
 }
 .tree .item-list {
   max-height: 200px;
@@ -17,31 +104,6 @@
 .tree .item-list li:hover {
   background: #f4f7f9;
 }
-.tree .single-select-list li .action:before {
-  margin-right: 15px;
-  content: ' ';
-}
-.tree .single-select-list li.active .action:before {
-  content: '\2713';
-  margin-right: 5px;
-  font-style: normal;
-}
-.tree .multi-select-list li.partial .action:before {
-  content: '\25A0';
-  margin-right: 5px;
-  font-style: normal;
-}
-.tree .multi-select-list li.active .action:before {
-  content: '\2611';
-  margin-right: 5px;
-  font-style: normal;
-}
-.tree .multi-select-list li .action:before {
-  content: '\2610';
-  margin-right: 5px;
-  font-style: normal;
-  font-size: 18px;
-}
 .tree .hitarea {
   background: url(//i.l.inmobicdn.net/website/portal/kensho/0.347/images/apps/campaigns/Sprite_Tree.png) no-repeat -64px -25px;
   display: inline-block;
@@ -51,30 +113,4 @@
 }
 .tree .hitarea.collapsed {
   background-position: -80px -3px;
-}
-
-ul.item-list .list-item > a > .icon,
-ul.item-list .list-item > a > .icon ,.tree .item-list li.list-item a>.icon{
-  background: url("//i.l.inmobicdn.net/website/portal/kensho/0.347/css/images/SPRITE.png");
-  background-repeat: no-repeat;
-  background-position: -32px -866px;
-  width: 19px;
-  height: 19px;
-  display: inline-block;
-  margin-right: 5px;
-  vertical-align: middle;
-}
-ul.item-list .list-item.active > div >a > .icon,
-ul.item-list .list-item.active > a > .icon,
-ul.item-list .single-select-item.active > a > .icon {
-  background-position: -10px -866px;
-}
-.tree .item-list .list-item.partial >div >a>.icon,
-ul.item-list .list-item.partial > a > .icon,
-ul.item-list .list-item.partial > a > .icon {
-  background-position: -54px -866px;
-}
-ul.item-list .list-item.disabled > a,
-ul.item-list .list-item.disabled > a {
-  color: #ccc;
 }
