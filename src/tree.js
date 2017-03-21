@@ -1,4 +1,3 @@
-import "./tree.css";
 import {core, components} from "react-starter-components";
 import React, {PropTypes, Component} from "react";
 import Promise from 'bluebird';
@@ -6,11 +5,11 @@ import Selection from "selection-manager";
 const {common:CommonComponent} = components;
 const {SelectableList, SelectableItem, InlinePopupGroup} = CommonComponent;
 const {InlinePopup, InlineButton, InlineBody} = InlinePopupGroup;
-
+const ALL_SELECTED = -1;
 
 /*
-*@description: React View for Expland and collapse
-*/
+ *@description: React View for Expland and collapse
+ */
 export const ExpandCollapse =(props)=>{
     let clsName = props.expand ? '' : 'collapsed';
     return <a href="#expand" onClick={props.toggleExpand}><em className={'hitarea  ' + clsName}></em></a>;
@@ -18,10 +17,10 @@ export const ExpandCollapse =(props)=>{
 
 
 /**
-*@class
-*@extends {SelectableList}
-*@description: Selectable View for React Tree
-*/
+ *@class
+ *@extends {SelectableList}
+ *@description: Selectable View for React Tree
+ */
 export class TreeSelectableList extends SelectableList{
     componentDidMount() {
         let selectionManager = this.props.selectionManager;
@@ -53,16 +52,18 @@ export class TreeSelectableList extends SelectableList{
 }
 
 /*
-*@class
-*@extends SelectableItem
-*@description: TreeView Item
-*/
+ *@class
+ *@extends SelectableItem
+ *@description: TreeView Item
+ */
 export class TreeItem extends SelectableItem {
 
     constructor() {
         super(...arguments);
         let {itemData, selectionManager} = this.props;
         this.state = {
+            children:[],
+            expand:false,
             selected: selectionManager.isSelected(itemData),
             partialSelected:this.isPartialSelected()
         }
@@ -70,7 +71,18 @@ export class TreeItem extends SelectableItem {
     }
     componentDidMount() {
         let {itemData, selectionManager} = this.props;
-        this.getParentId() && selectionManager.trigger('partialSelected',this.getParentId());
+        let selected = selectionManager.isSelected(itemData);
+        if(!selected){
+            if(this.isParentSelected()){
+                selectionManager.select(itemData);
+                this.setState({'selected':selectionManager.isSelected(itemData)});
+            }
+
+        }
+        if(itemData.id === ALL_SELECTED){
+            this.toggleExpand();
+        }
+        //this.getParentId() &&  selectionManager.trigger('partialSelected',this.getParentId());
     }
 
     getAllChildren(itemData){
@@ -81,7 +93,7 @@ export class TreeItem extends SelectableItem {
         event.preventDefault();
         let {itemData, selectionManager} = this.props;
         if (selectionManager._multiSelect) {
-            selectionManager.toggle(itemData);
+            selectionManager.toggle({id:itemData.id,name:itemData.name});
             if(this.hasChildren()){
                 let children = this.getAllChildren(itemData);
                 children.forEach(function(v){
@@ -136,8 +148,8 @@ export class TreeItem extends SelectableItem {
         let children  = this.getAllChildren(itemData);
         if(this.hasChildren()){
             return !selectionManager.isSelected(itemData) && children.filter(function(v){
-                return selectionManager.isSelected(v);
-            }).length > 0;
+                    return selectionManager.isSelected(v);
+                }).length > 0;
         }
     }
 
@@ -147,7 +159,7 @@ export class TreeItem extends SelectableItem {
         if(this.hasChildren()){
             return children.length === children.filter(function(v){
                     return selectionManager.isSelected(v);
-            }).length;
+                }).length;
         }
         return false;
     }
@@ -167,13 +179,34 @@ export class TreeItem extends SelectableItem {
         return this.props.itemData.parentId;
     }
 
+    isParentSelected(){
+        let {itemData, selectionManager} = this.props;
+        return itemData.parentId && selectionManager.isSelected({id:itemData.parentId});
+    }
+    toggleExpand =(e)=>{
+        e && e.preventDefault(); // if children is there??
+        if(this.isOpen()){
+            this.setState({expand:false});
+        }
+        else{
+            if(this.hasChildren()){
+                let childList = this.getChildrenList(); //getChildrenList -->it is deffered,
+                childList.then((data)=> {
+                    this.setState({expand:true,children:data});
+                });
+            }
+        }
+    }
+    isOpen(){
+        return this.state.expand;
+    }
     renderContent() {
         var itemData = this.props.itemData;
         var ContainerTag = this.props.tagName
-        var ClickItemContentTag = SubtreeComponent;
+        var ClickItemContentTag = this.props.SubtreeComponent || SubtreeComponent;
         var tagProps = this.getTagProps();
         return (<ContainerTag {...tagProps} >
-            <ClickItemContentTag selectionManager={this.props.selectionManager} onClick={this.selectItem.bind(this)} name={itemData.name} hasChild={this.hasChildren()} getChildrenList={this.getChildrenList}/>
+            <ClickItemContentTag expand={this.state.expand} toggleExpand={this.toggleExpand} selectionManager={this.props.selectionManager} onClick={this.selectItem.bind(this)} name={itemData.name} hasChild={this.hasChildren()}  id={itemData.id} children={this.state.children}/>
         </ContainerTag>);
     }
 }
@@ -184,53 +217,28 @@ export const ClickActionItemContent = (props) => {
 }
 
 /*
-*@class SubtreeComponent
-*@extends Component
-*@desc:SubtreeView React View
-*/
+ *@class SubtreeComponent
+ *@extends Component
+ *@desc:SubtreeView React View
+ */
 export class SubtreeComponent extends Component{
-    constructor(props){
-        super(props)
-        this.props = props;
-        this.state = {
-            expand:false,
-            children:[]
-        }
-    }
-    isOpen(){
-        return this.state.expand;
-    }
-    toggleExpand =(e)=>{
-        e.preventDefault(); // if children is there??
-        if(this.isOpen()){
-            this.setState({expand:false});
-        }
-        else{
-            if(this.props.hasChild){
-                let childList = this.props.getChildrenList(); //getChildrenList -->it is deffered,
-                childList.then((data)=> {
-                    this.setState({expand:true,children:data});
-                });
-            }
-        }
-    }
     render(){
         var itemData = this.props;
-        if(this.state.expand){
+        if(this.props.expand){
             let configs = {
                 ListItem:TreeItem,
-                items: this.state.children,
+                items: this.props.children,
                 selectionManager: this.props.selectionManager,
             }
             return <div>
-                <ExpandCollapse toggleExpand={this.toggleExpand} expand={this.state.expand}/><ClickActionItemContent onClick={this.props.onClick} name={itemData.name} hasChild={itemData.hasChild}></ClickActionItemContent>
+                <ExpandCollapse toggleExpand={this.props.toggleExpand} expand={this.props.expand}/><ClickActionItemContent onClick={this.props.onClick} name={itemData.name} hasChild={itemData.hasChild}></ClickActionItemContent>
                 <div className="subtree"> <TreeSelectableList {...configs}/> </div>
             </div>;
         }
         else {
             if(itemData.hasChild){
                 return <div>
-                    <ExpandCollapse toggleExpand={this.toggleExpand} expand={this.state.expand}/><ClickActionItemContent onClick={this.props.onClick} name={itemData.name} hasChild={itemData.hasChild}></ClickActionItemContent>
+                    <ExpandCollapse toggleExpand={this.props.toggleExpand} expand={this.props.expand}/><ClickActionItemContent onClick={this.props.onClick} name={itemData.name} hasChild={itemData.hasChild}></ClickActionItemContent>
                 </div>;
             }
             else{
@@ -243,38 +251,30 @@ export class SubtreeComponent extends Component{
 
 
 /*
-*@class Tree
-*@extends Component
-*@descriptio:React Tree component
-*/
+ *@class Tree
+ *@extends Component
+ *@descriptio:React Tree component
+ */
 export default class Tree extends Component {
 
     constructor(props){
         super(props);
-        let {items: items = [],multiSelect: multiSelect = false,
+        let {items: items = [], multiSelect: multiSelect = false,
             selectionManager:selectionManager = new Selection({multiSelect:multiSelect}) ,selectTreeItems:selectTreeItems=[]} = props;
-        
+
         selectTreeItems.forEach(function(v){
-            selectionManager.select(v);
+            selectionManager.select({id:v});
         });
 
-
-        selectionManager.on('change', function (selected, prevSelected) {
-            console.log(selected);
-        });
         this.multiSelect = multiSelect;
         this.selectionManager = selectionManager;
-        this.items = items;
         this.state= {
             items:items,
-            searchText:'',
-            selected:selectionManager.getSelected()
         };
     }
 
-    onChange =(e)=>{
-        console.log(e);
-    }
+
+
     render(){
         const items = this.state.items;
         let {ListItem: ListItem = TreeItem,
@@ -289,8 +289,8 @@ export default class Tree extends Component {
         }
 
         return <div className="tree">
-                <TreeSelectableList {...configs}/>
-            </div>;
+            <TreeSelectableList {...configs}/>
+        </div>;
     }
 
 }
